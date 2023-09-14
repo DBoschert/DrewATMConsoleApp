@@ -42,20 +42,56 @@ while (true) {
         Console.WriteLine("[Login Failed!]");
         continue;
     }
+    
     // MAIN MENU
+    var action = GetMenuSelection(customer).ToLower();
+    Console.WriteLine(action);
+    
+    // CHECK BALANCE
+    if (action == "b") {
+        // GetBalance method
+    }
+    // MAKE DEPOSIT
+    else if (action == "d") {
+        // MakeDeposit method
+    }
+    // MAKE WITHDRAW
+    else if (action == "w") {
+        // MakeWithdraw method
+    }
+    // MAKE TRANSFER
+    else if (action == "t") {
+        // MakeTransfer method
+    }
+    // SHOW TRANSACTIONS
+    else if (action == "st") {
+        // ShowTransactions method
+    }
+
+    // End Program
+    break;
+}
+
+string GetMenuSelection(Customer customer) {
+    string? selection = "";
     Console.Clear();
     Console.WriteLine($"Hello {customer!.Name}!\n");
-    Console.WriteLine("'b' = Balance");
-    Console.WriteLine("'d' = Deposit");
-    Console.WriteLine("'w' = Withdraw");
-    Console.WriteLine("'t' = Transfer");
-    Console.WriteLine("'st' = Show Transactions");
-    Console.Write("\nPlease make a selection: ");
-    var selection = Console.ReadLine();
-    
-    
-
-    break;
+    while (true) {
+        Console.WriteLine("'b' = Balance");
+        Console.WriteLine("'d' = Deposit");
+        Console.WriteLine("'w' = Withdraw");
+        Console.WriteLine("'t' = Transfer");
+        Console.WriteLine("'st' = Show Transactions");
+        Console.Write("\nPlease make a selection: ");
+        selection = Console.ReadLine();
+        if (selection is null || selection == "") {
+            Console.Clear();
+            Console.WriteLine("Please make a valid selection\n");
+            continue;
+        }
+        break;
+    }
+        return selection!;
 }
 
 
@@ -75,4 +111,12 @@ async Task<JsonResponse> CustomerLoginAsync(HttpClient http, JsonSerializerOptio
     };
 }
 
+// GetBalance method
 
+// MakeDeposit method
+
+// MakeWithdraw method
+
+// MakeTransfer method
+
+// ShowTransactions method
