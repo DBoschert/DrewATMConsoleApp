@@ -72,7 +72,7 @@ while (true) {
 }
 
 string GetMenuSelection(Customer customer) {
-    string? selection = "";
+    string? selection;
     Console.Clear();
     Console.WriteLine($"Hello {customer!.Name}!\n");
     while (true) {
