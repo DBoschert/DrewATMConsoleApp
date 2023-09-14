@@ -1,0 +1,14 @@
+C:\repos\ATMConsoleApp\ATMConsoleApp\bin\Debug\net7.0\ATMConsoleApp.exe
+C:\repos\ATMConsoleApp\ATMConsoleApp\bin\Debug\net7.0\ATMConsoleApp.deps.json
+C:\repos\ATMConsoleApp\ATMConsoleApp\bin\Debug\net7.0\ATMConsoleApp.runtimeconfig.json
+C:\repos\ATMConsoleApp\ATMConsoleApp\bin\Debug\net7.0\ATMConsoleApp.dll
+C:\repos\ATMConsoleApp\ATMConsoleApp\bin\Debug\net7.0\ATMConsoleApp.pdb
+C:\repos\ATMConsoleApp\ATMConsoleApp\obj\Debug\net7.0\ATMConsoleApp.GeneratedMSBuildEditorConfig.editorconfig
+C:\repos\ATMConsoleApp\ATMConsoleApp\obj\Debug\net7.0\ATMConsoleApp.AssemblyInfoInputs.cache
+C:\repos\ATMConsoleApp\ATMConsoleApp\obj\Debug\net7.0\ATMConsoleApp.AssemblyInfo.cs
+C:\repos\ATMConsoleApp\ATMConsoleApp\obj\Debug\net7.0\ATMConsoleApp.csproj.CoreCompileInputs.cache
+C:\repos\ATMConsoleApp\ATMConsoleApp\obj\Debug\net7.0\ATMConsoleApp.dll
+C:\repos\ATMConsoleApp\ATMConsoleApp\obj\Debug\net7.0\refint\ATMConsoleApp.dll
+C:\repos\ATMConsoleApp\ATMConsoleApp\obj\Debug\net7.0\ATMConsoleApp.pdb
+C:\repos\ATMConsoleApp\ATMConsoleApp\obj\Debug\net7.0\ATMConsoleApp.genruntimeconfig.cache
+C:\repos\ATMConsoleApp\ATMConsoleApp\obj\Debug\net7.0\ref\ATMConsoleApp.dll
