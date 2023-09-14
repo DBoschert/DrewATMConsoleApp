@@ -27,6 +27,8 @@ JsonSerializerOptions joptions = new JsonSerializerOptions() {
     WriteIndented = true
 };
 
+Customer? customer;
+//Account? account;
 
 // RUN ATM LOGIC
 while (true) {
@@ -36,7 +38,7 @@ while (true) {
     Console.Write("Enter Pin Code: ");
     int pinCode = Convert.ToInt32(Console.ReadLine());
     var jsonResponse = await CustomerLoginAsync(http, joptions, cardCode, pinCode);
-    var customer = jsonResponse.DataReturned as Customer;
+    customer = jsonResponse.DataReturned as Customer;
     var status = jsonResponse.HttpStatusCode;
     if (customer == null || status == 404) {
         Console.Clear();
@@ -50,6 +52,8 @@ while (true) {
     // CHECK BALANCE
     if (action == "b") {
         // GetBalance method
+        Account account = await SelectAccount(http, joptions, customer.Id);
+        Console.WriteLine($"You selected {account.Id} {account.Description}");
     }
     // MAKE DEPOSIT
     else if (action == "d") {
@@ -78,30 +82,7 @@ while (true) {
     break;
 }
 
-string GetMenuSelection(Customer customer) {
-    string? selection;
-    Console.Clear();
-    Console.WriteLine($"Hello {customer!.Name}!\n");
-    while (true) {
-        Console.WriteLine("'b' = Balance");
-        Console.WriteLine("'d' = Deposit");
-        Console.WriteLine("'w' = Withdraw");
-        Console.WriteLine("'t' = Transfer");
-        Console.WriteLine("'st' = Show Transactions");
-        Console.Write("\nPlease make a selection: ");
-        selection = Console.ReadLine();
-        if (selection is null || selection == "") {
-            Console.Clear();
-            Console.WriteLine("Please make a valid selection\n");
-            continue;
-        }
-        break;
-    }
-        return selection!;
-}
-
-
-// CUSTOMER LOGIN
+// (1) CUSTOMER LOGIN
 async Task<JsonResponse> CustomerLoginAsync(HttpClient http, JsonSerializerOptions joptions, int cardCode, int pinCode) {
     HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, $"{baseurl}/api/customers/{cardCode}/{pinCode}");
     HttpResponseMessage res = await http.SendAsync(req);
@@ -116,6 +97,54 @@ async Task<JsonResponse> CustomerLoginAsync(HttpClient http, JsonSerializerOptio
         DataReturned = customer
     };
 }
+
+// (2) MAIN MENU PROMPT
+string GetMenuSelection(Customer customer) {
+    string? selection;
+    Console.Clear();
+    Console.WriteLine($"Hello {customer!.Name}!\n");
+    while (true) {
+        Console.WriteLine("'B' = Balance");
+        Console.WriteLine("'D' = Deposit");
+        Console.WriteLine("'W' = Withdraw");
+        Console.WriteLine("'T' = Transfer");
+        Console.WriteLine("'ST' = Show Transactions");
+        Console.Write("\nPlease make a selection: ");
+        selection = Console.ReadLine();
+        if (selection is null || selection == "") {
+            Console.Clear();
+            Console.WriteLine("Please make a valid selection\n");
+            continue;
+        }
+        break;
+    }
+        return selection!;
+}
+
+// (3) ACCOUNT SELECTION MENU
+async Task<Account> SelectAccount(HttpClient http, JsonSerializerOptions joptions, int custId) {
+    HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, $"{baseurl}/api/accounts");
+    HttpResponseMessage res = await http.SendAsync(req);
+    if (res.StatusCode != System.Net.HttpStatusCode.OK) {
+        Console.WriteLine($"Http ErrorCode: {res.StatusCode}");
+    }
+    var json = await res.Content.ReadAsStringAsync();
+    var accounts = JsonSerializer.Deserialize(json, typeof(IEnumerable<Account>), joptions) as IEnumerable<Account>;
+    // SELECTION MENU
+    Console.Clear();
+    Console.WriteLine("AVAILABLE ACCOUNTS\n" +
+                      "------------------");
+    var custAccounts = accounts.Where(x => x.CustomerId == custId);
+    foreach(Account acct in custAccounts) {
+        Console.WriteLine($"'{acct.Id}' {acct.Description}");
+    }
+    Console.Write("\nPlease make a selection: ");
+    var acctId = Convert.ToInt32(Console.ReadLine());
+    var account = accounts.Where(x => x.Id == acctId).SingleOrDefault();
+    return account!;
+}
+
+
 
 // CHECK BALANCE
 
