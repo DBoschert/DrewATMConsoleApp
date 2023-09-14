@@ -27,7 +27,6 @@ JsonSerializerOptions joptions = new JsonSerializerOptions() {
 };
 
 Customer? customer;
-//Account? account;
 
 // RUN ATM LOGIC
 while (true) {
@@ -131,12 +130,11 @@ async Task<Account> SelectAccount(HttpClient http, JsonSerializerOptions joption
     foreach(Account acct in custAccounts) {
         Console.WriteLine($"'{acct.Id}' {acct.Description}");
     }
-    Console.Write("\nPlease make a selection: ");
+    Console.Write("\nPlease selection an account: ");
     var acctId = Convert.ToInt32(Console.ReadLine());
     var account = accounts.Where(x => x.Id == acctId).SingleOrDefault();
     return account!;
 }
-
 
 
 // CHECK BALANCE
