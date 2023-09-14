@@ -45,7 +45,6 @@ while (true) {
     
     // MAIN MENU
     var action = GetMenuSelection(customer).ToLower();
-    Console.WriteLine(action);
     
     // CHECK BALANCE
     if (action == "b") {
@@ -111,12 +110,12 @@ async Task<JsonResponse> CustomerLoginAsync(HttpClient http, JsonSerializerOptio
     };
 }
 
-// GetBalance method
+// CHECK BALANCE
 
-// MakeDeposit method
+// MAKE DEPOSIT
 
-// MakeWithdraw method
+// MAKE WITHDRAW
 
-// MakeTransfer method
+// MAKE TRANSFER
 
-// ShowTransactions method
+// SHOW TRANSACTIONS
