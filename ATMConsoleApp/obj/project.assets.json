@@ -8,7 +8,7 @@
     "net7.0": []
   },
   "packageFolders": {
-    "C:\\Users\\antho\\.nuget\\packages\\": {}
+    "C:\\Users\\max-student\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
@@ -16,11 +16,11 @@
       "projectUniqueName": "C:\\repos\\ATMConsoleApp\\ATMConsoleApp\\ATMConsoleApp.csproj",
       "projectName": "ATMConsoleApp",
       "projectPath": "C:\\repos\\ATMConsoleApp\\ATMConsoleApp\\ATMConsoleApp.csproj",
-      "packagesPath": "C:\\Users\\antho\\.nuget\\packages\\",
+      "packagesPath": "C:\\Users\\max-student\\.nuget\\packages\\",
       "outputPath": "C:\\repos\\ATMConsoleApp\\ATMConsoleApp\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\antho\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\max-student\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -61,7 +61,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
       }
     }
   }

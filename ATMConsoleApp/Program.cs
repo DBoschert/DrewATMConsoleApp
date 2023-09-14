@@ -15,6 +15,7 @@ Then there should be a menu showing the customer what the options are for the AT
 using ATMConsoleApp.Models;
 using ATMConsoleApp;
 using System.Text.Json;
+using System.Security.Principal;
 
 const string baseurl = "http://localhost:1111";
 
@@ -53,6 +54,12 @@ while (true) {
     // MAKE DEPOSIT
     else if (action == "d") {
         // MakeDeposit method
+        
+        // make amount be the amount the user puts in
+        // make account be the users account
+
+        await Deposit(amount, account, joptions);
+
     }
     // MAKE WITHDRAW
     else if (action == "w") {
@@ -113,6 +120,22 @@ async Task<JsonResponse> CustomerLoginAsync(HttpClient http, JsonSerializerOptio
 // CHECK BALANCE
 
 // MAKE DEPOSIT
+
+// make amount be the amount the user puts in
+// make account be the users account
+
+async Task<JsonResponse> Deposit(decimal amount, Account account, JsonSerializerOptions options)
+{
+    HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Put, $"{baseurl}/api/deposit/{amount}/{account.Id}");
+    var json = JsonSerializer.Serialize<Account>(account, options);
+    req.Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+    HttpResponseMessage res = await http.SendAsync(req);
+    Console.WriteLine($"HTTP StatusCode is {res.StatusCode}");
+    return new JsonResponse()
+    {
+        HttpStatusCode = (int)res.StatusCode
+    };
+}
 
 // MAKE WITHDRAW
 
