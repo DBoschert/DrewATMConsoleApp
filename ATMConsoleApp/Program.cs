@@ -28,7 +28,7 @@ JsonSerializerOptions joptions = new JsonSerializerOptions() {
 };
 
 Customer? customer;
-//Account? account;
+JsonResponse jsonResponse;
 
 // RUN ATM LOGIC
 while (true) {
@@ -37,7 +37,7 @@ while (true) {
     int cardCode = Convert.ToInt32(Console.ReadLine());
     Console.Write("Enter Pin Code: ");
     int pinCode = Convert.ToInt32(Console.ReadLine());
-    var jsonResponse = await CustomerLoginAsync(http, joptions, cardCode, pinCode);
+    jsonResponse = await CustomerLoginAsync(http, joptions, cardCode, pinCode);
     customer = jsonResponse.DataReturned as Customer;
     var status = jsonResponse.HttpStatusCode;
     if (customer == null || status == 404) {
@@ -51,12 +51,14 @@ while (true) {
     
     // CHECK BALANCE
     if (action == "b") {
-        // GetBalance method
+        // CheckBalance method
         Account account = await SelectAccount(http, joptions, customer.Id);
-        Console.WriteLine($"You selected {account.Id} {account.Description}");
+        jsonResponse = await CheckBalance(http, joptions, account.Id);
+        Console.WriteLine($"{account.Description} Balance: ${account.Balance}");
     }
     // MAKE DEPOSIT
     else if (action == "d") {
+<<<<<<< HEAD
         // MakeDeposit method
         
         // make amount be the amount the user puts in
@@ -64,14 +66,26 @@ while (true) {
 
         await Deposit(amount, account, joptions);
 
+=======
+        // Deposit method
+        Account account = await SelectAccount(http, joptions, customer.Id);
+        jsonResponse = await Deposit(500, account, http, joptions);
+        Console.WriteLine("Transfer Successful!");
+>>>>>>> 49e8405f60b1466e7adf85138a45fcc28e7ae074
     }
     // MAKE WITHDRAW
     else if (action == "w") {
         // MakeWithdraw method
+        Account account = await SelectAccount(http, joptions, customer.Id);
+        jsonResponse = await Withdraw(200, account, http, joptions);
+        Console.WriteLine("Withdraw Successful!");
     }
     // MAKE TRANSFER
     else if (action == "t") {
         // MakeTransfer method
+        Account account = await SelectAccount(http, joptions, customer.Id);
+        //jsonResponse = await Transfer(, account, http, joptions);
+        Console.WriteLine("Withdraw Successful!");
     }
     // SHOW TRANSACTIONS
     else if (action == "st") {
@@ -138,17 +152,35 @@ async Task<Account> SelectAccount(HttpClient http, JsonSerializerOptions joption
     foreach(Account acct in custAccounts) {
         Console.WriteLine($"'{acct.Id}' {acct.Description}");
     }
-    Console.Write("\nPlease make a selection: ");
+    Console.Write("\nPlease selection an account: ");
     var acctId = Convert.ToInt32(Console.ReadLine());
     var account = accounts.Where(x => x.Id == acctId).SingleOrDefault();
     return account!;
 }
 
 
-
 // CHECK BALANCE
+async Task<JsonResponse> CheckBalance(HttpClient http, JsonSerializerOptions joptions, int acctId) {
+    HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, $"{baseurl}/api/accounts/balance/{acctId}");
+    HttpResponseMessage res = await http.SendAsync(req);
+    var balance = await res.Content.ReadAsStringAsync();
+    return new JsonResponse {
+        HttpStatusCode = (int)res.StatusCode,
+        DataReturned = balance.ToString()
+    };
+}
 
 // MAKE DEPOSIT
+async Task<JsonResponse> Deposit(decimal amount, Account account, HttpClient http, JsonSerializerOptions options) {
+    HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Put, $"{baseurl}/api/accounts/deposit/{amount}/{account.Id}");
+    var json = JsonSerializer.Serialize<Account>(account, options);
+    req.Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+    HttpResponseMessage res = await http.SendAsync(req);
+    return new JsonResponse() {
+        HttpStatusCode = (int)res.StatusCode,
+        DataReturned = account
+    };
+}
 
 // make amount be the amount the user puts in
 // make account be the users account
@@ -167,7 +199,27 @@ async Task<JsonResponse> Deposit(decimal amount, Account account, JsonSerializer
 }
 
 // MAKE WITHDRAW
+async Task<JsonResponse> Withdraw(decimal amount, Account account, HttpClient http, JsonSerializerOptions options) {
+    HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Put, $"{baseurl}/api/accounts/withdraw/{amount}/{account.Id}");
+    var json = JsonSerializer.Serialize<Account>(account, options);
+    req.Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+    HttpResponseMessage res = await http.SendAsync(req);
+    return new JsonResponse() {
+        HttpStatusCode = (int)res.StatusCode,
+        DataReturned = account
+    };
+}
 
 // MAKE TRANSFER
+async Task<JsonResponse> Transfer(decimal amount, int id1, int id2, Account account, HttpClient http, JsonSerializerOptions options) {
+    HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Put, $"{baseurl}/api/accounts/transfer/{amount}/{id1}/{id2}");
+    var json = JsonSerializer.Serialize<Account>(account, options);
+    req.Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+    HttpResponseMessage res = await http.SendAsync(req);
+    return new JsonResponse() {
+        HttpStatusCode = (int)res.StatusCode,
+        DataReturned = account
+    };
+}
 
 // SHOW TRANSACTIONS
