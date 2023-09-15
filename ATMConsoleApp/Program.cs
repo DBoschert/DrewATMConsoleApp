@@ -2,10 +2,6 @@
 using ATMConsoleApp;
 using System.Text.Json;
 
-/*
-    TODO:
-    - Create prompt to enter deposit / witdraw amounts
- */
 
 /* -*-*-*-*-*-*-*-*-*-*-*  ATM LOGIC  *-*-*-*-*-*-*-*-*-*-*- */
 
@@ -32,7 +28,7 @@ while (true) {
     // CHECK BALANCE
     if (action == "b") {
         // CheckBalance method
-        Account account = await SelectAccount(http, joptions, customer.Id, "Please selection an account: ");
+        Account account = await SelectAccount(http, joptions, customer.Id);
         jsonResponse = await CheckBalance(http, joptions, account.Id);
         Console.WriteLine($"{account.Description} Balance: ${account.Balance}");
         Console.Write("\n[PRESS ENTER]");
@@ -42,7 +38,7 @@ while (true) {
     // MAKE DEPOSIT
     else if (action == "d") {
         // Deposit method
-        Account account = await SelectAccount(http, joptions, customer.Id, "Please selection an account: ");
+        Account account = await SelectAccount(http, joptions, customer.Id);
         Console.Write("Please enter amount: ");
         decimal amount = Convert.ToDecimal(Console.ReadLine());
         jsonResponse = await Deposit(amount, account, http, joptions);
@@ -55,7 +51,7 @@ while (true) {
     // MAKE WITHDRAW
     else if (action == "w") {
         // MakeWithdraw method
-        Account account = await SelectAccount(http, joptions, customer.Id, "Please selection an account: ");
+        Account account = await SelectAccount(http, joptions, customer.Id);
         Console.Write("Please enter amount: ");
         decimal amount = Convert.ToDecimal(Console.ReadLine());
         jsonResponse = await Withdraw(amount, account, http, joptions);
@@ -80,7 +76,7 @@ while (true) {
     // SHOW TRANSACTIONS
     else if (action == "st") {
         // ShowTransactions method
-        Account account = await SelectAccount(http, joptions, customer.Id, "Please selection an account: ");
+        Account account = await SelectAccount(http, joptions, customer.Id);
         await ShowTransactions(account, http, joptions);
     } 
     // EXIT ATM APP
@@ -108,7 +104,8 @@ async Task<Customer> LoginPrompt() {
         customer = jsonResponse.DataReturned as Customer;
         var status = jsonResponse.HttpStatusCode;
         if (customer == null || status == 404) {
-            Console.WriteLine("[Login Failed!]");
+            Console.WriteLine("\n[Login Failed!]");
+            Console.Write("[PRESS ENTER]");
             Console.ReadLine();
             Console.Clear();
             continue;
@@ -160,7 +157,7 @@ async Task<JsonResponse> CustomerLoginAsync(HttpClient http, JsonSerializerOptio
 }
 
 // ACCOUNT SELECTION MENU
-async Task<Account> SelectAccount(HttpClient http, JsonSerializerOptions joptions, int custId, string msg) {
+async Task<Account> SelectAccount(HttpClient http, JsonSerializerOptions joptions, int custId, string msg = "Please selection an account: ") {
     HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, $"{baseurl}/api/accounts");
     HttpResponseMessage res = await http.SendAsync(req);
     if (res.StatusCode != System.Net.HttpStatusCode.OK) {
