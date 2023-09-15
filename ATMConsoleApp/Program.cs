@@ -14,7 +14,7 @@ JsonSerializerOptions joptions = new JsonSerializerOptions() {
     WriteIndented = true
 };
 
-// RUN ATM LOGIC
+// CUSTOMER - Uses the LoginPrompt method to assign a customer
 Customer? customer = await LoginPrompt();
 JsonResponse jsonResponse;
 
@@ -83,10 +83,9 @@ string ShowHeader() {
            "+-------------------+";
 }
 
-// LOGIN PROMPT
+// LOGIN PROMPT - Does an API call
 async Task<Customer> LoginPrompt() {
     while (true) {
-        // LOGIN PROMPT
         Console.WriteLine(ShowHeader());
         Console.Write("Enter Card Code: ");
         int cardCode = Convert.ToInt32(Console.ReadLine());
@@ -106,30 +105,7 @@ async Task<Customer> LoginPrompt() {
     return customer;
 }
 
-// PRINT MESSAGE
-string Msg(string msg) {
-    return $"{msg}";
-}
-
-/* -*-*-*-*-*-*-*-*-*-*-*  CALL METHODS  *-*-*-*-*-*-*-*-*-*-*- */
-
-// (1) CUSTOMER LOGIN
-async Task<JsonResponse> CustomerLoginAsync(HttpClient http, JsonSerializerOptions joptions, int cardCode, int pinCode) {
-    HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, $"{baseurl}/api/customers/{cardCode}/{pinCode}");
-    HttpResponseMessage res = await http.SendAsync(req);
-    if (res.StatusCode != System.Net.HttpStatusCode.OK) {
-        Console.WriteLine($"Http ErrorCode: {res.StatusCode}");
-    }
-    var json = await res.Content.ReadAsStringAsync();
-    var customer = (Customer?)JsonSerializer.Deserialize(json, typeof(Customer), joptions);
-    if (customer is null) throw new Exception();
-    return new JsonResponse {
-        HttpStatusCode = (int)res.StatusCode,
-        DataReturned = customer
-    };
-}
-
-// (2) MAIN MENU PROMPT
+// MAIN MENU PROMPT
 string GetMenuSelection(Customer customer) {
     string? selection;
     Console.WriteLine($"Hello {customer!.Name}!\n");
@@ -149,10 +125,33 @@ string GetMenuSelection(Customer customer) {
         }
         break;
     }
-        return selection!;
+    return selection!;
 }
 
-// (3) ACCOUNT SELECTION MENU
+// PRINT MESSAGE
+string Msg(string msg) {
+    return $"{msg}";
+}
+
+/* -*-*-*-*-*-*-*-*-*-*-*  CALL TO API METHODS  *-*-*-*-*-*-*-*-*-*-*- */
+
+// CUSTOMER LOGIN
+async Task<JsonResponse> CustomerLoginAsync(HttpClient http, JsonSerializerOptions joptions, int cardCode, int pinCode) {
+    HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, $"{baseurl}/api/customers/{cardCode}/{pinCode}");
+    HttpResponseMessage res = await http.SendAsync(req);
+    if (res.StatusCode != System.Net.HttpStatusCode.OK) {
+        Console.WriteLine($"Http ErrorCode: {res.StatusCode}");
+    }
+    var json = await res.Content.ReadAsStringAsync();
+    var customer = (Customer?)JsonSerializer.Deserialize(json, typeof(Customer), joptions);
+    if (customer is null) throw new Exception();
+    return new JsonResponse {
+        HttpStatusCode = (int)res.StatusCode,
+        DataReturned = customer
+    };
+}
+
+// ACCOUNT SELECTION MENU
 async Task<Account> SelectAccount(HttpClient http, JsonSerializerOptions joptions, int custId, string msg) {
     HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, $"{baseurl}/api/accounts");
     HttpResponseMessage res = await http.SendAsync(req);
