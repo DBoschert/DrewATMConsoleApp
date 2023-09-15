@@ -69,7 +69,9 @@ while (true) {
         // MakeTransfer method
         Account account1 = await SelectAccount(http, joptions, customer.Id, "Please selection FROM account: ");
         Account account2 = await SelectAccount(http, joptions, customer.Id, "Please selection TO account: ");
-        jsonResponse = await Transfer(35, account1, account2, http, joptions);
+        Console.Write("Please enter amount: ");
+        decimal amount = Convert.ToDecimal(Console.ReadLine());
+        jsonResponse = await Transfer(amount, account1, account2, http, joptions);
         Console.WriteLine("Transfer Successful!");
         Console.Write("\n[PRESS ENTER]");
         Console.ReadLine();
@@ -137,11 +139,6 @@ string GetMenuSelection(Customer customer) {
         break;
     }
     return selection!;
-}
-
-// PRINT MESSAGE
-string Msg(string msg) {
-    return $"{msg}";
 }
 
 /* -*-*-*-*-*-*-*-*-*-*-*  CALL TO API METHODS  *-*-*-*-*-*-*-*-*-*-*- */
