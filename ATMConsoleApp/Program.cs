@@ -2,6 +2,11 @@
 using ATMConsoleApp;
 using System.Text.Json;
 
+/*
+    TODO:
+    - Create prompt to enter deposit / witdraw amounts
+ */
+
 /* -*-*-*-*-*-*-*-*-*-*-*  ATM LOGIC  *-*-*-*-*-*-*-*-*-*-*- */
 
 const string baseurl = "http://localhost:1111";
@@ -27,20 +32,22 @@ while (true) {
     // CHECK BALANCE
     if (action == "b") {
         // CheckBalance method
-        Account account = await SelectAccount(http, joptions, customer.Id, Msg("Please selection an account: "));
+        Account account = await SelectAccount(http, joptions, customer.Id, "Please selection an account: ");
         jsonResponse = await CheckBalance(http, joptions, account.Id);
         Console.WriteLine($"{account.Description} Balance: ${account.Balance}");
-        Console.Write("[PRESS ENTER]");
+        Console.Write("\n[PRESS ENTER]");
         Console.ReadLine();
         Console.Clear();
     }
     // MAKE DEPOSIT
     else if (action == "d") {
         // Deposit method
-        Account account = await SelectAccount(http, joptions, customer.Id, Msg("Please selection an account: "));
-        jsonResponse = await Deposit(500, account, http, joptions);
+        Account account = await SelectAccount(http, joptions, customer.Id, "Please selection an account: ");
+        Console.Write("Please enter amount: ");
+        decimal amount = Convert.ToDecimal(Console.ReadLine());
+        jsonResponse = await Deposit(amount, account, http, joptions);
         Console.WriteLine("Transfer Successful!");
-        Console.Write("[PRESS ENTER]");
+        Console.Write("\n[PRESS ENTER]");
         Console.ReadLine();
         Console.Clear();
         continue;
@@ -48,27 +55,31 @@ while (true) {
     // MAKE WITHDRAW
     else if (action == "w") {
         // MakeWithdraw method
-        Account account = await SelectAccount(http, joptions, customer.Id, Msg("Please selection an account: "));
-        jsonResponse = await Withdraw(200, account, http, joptions);
+        Account account = await SelectAccount(http, joptions, customer.Id, "Please selection an account: ");
+        Console.Write("Please enter amount: ");
+        decimal amount = Convert.ToDecimal(Console.ReadLine());
+        jsonResponse = await Withdraw(amount, account, http, joptions);
         Console.WriteLine("Withdraw Successful!");
-        Console.Write("[PRESS ENTER]");
+        Console.Write("\n[PRESS ENTER]");
         Console.ReadLine();
         Console.Clear();
     }
     // MAKE TRANSFER
     else if (action == "t") {
         // MakeTransfer method
-        Account account1 = await SelectAccount(http, joptions, customer.Id, Msg("Please selection FROM account: "));
-        Account account2 = await SelectAccount(http, joptions, customer.Id, Msg("Please selection TO account: "));
+        Account account1 = await SelectAccount(http, joptions, customer.Id, "Please selection FROM account: ");
+        Account account2 = await SelectAccount(http, joptions, customer.Id, "Please selection TO account: ");
         jsonResponse = await Transfer(35, account1, account2, http, joptions);
         Console.WriteLine("Transfer Successful!");
-        Console.Write("[PRESS ENTER]");
+        Console.Write("\n[PRESS ENTER]");
         Console.ReadLine();
         Console.Clear();
     }
     // SHOW TRANSACTIONS
     else if (action == "st") {
         // ShowTransactions method
+        Account account = await SelectAccount(http, joptions, customer.Id, "Please selection an account: ");
+        await ShowTransactions(account, http, joptions);
     } 
     // EXIT ATM APP
     else if (action == "x") break;
@@ -80,7 +91,7 @@ while (true) {
 string ShowHeader() {
     return "+-------------------+\n" +
            "|    ATM MACHINE    |\n" +
-           "+-------------------+";
+           "+-------------------+\n";
 }
 
 // LOGIN PROMPT - Does an API call
@@ -162,9 +173,9 @@ async Task<Account> SelectAccount(HttpClient http, JsonSerializerOptions joption
     var accounts = JsonSerializer.Deserialize(json, typeof(IEnumerable<Account>), joptions) as IEnumerable<Account>;
     // SELECTION MENU
     Console.Clear();
-    Console.WriteLine(ShowHeader());
-    Console.WriteLine(" ACCOUNTS: \n" +
-                      "----------");
+    Console.WriteLine($"{ShowHeader()}" +
+                      $"\n ACCOUNTS: \n" +
+                       "----------");
     var custAccounts = accounts!.Where(x => x.CustomerId == custId);
     foreach(Account acct in custAccounts) {
         Console.WriteLine($"'{acct.Id}' {acct.Description}");
@@ -174,7 +185,6 @@ async Task<Account> SelectAccount(HttpClient http, JsonSerializerOptions joption
     var account = accounts!.Where(x => x.Id == acctId).SingleOrDefault();
     return account!;
 }
-
 
 // CHECK BALANCE
 async Task<JsonResponse> CheckBalance(HttpClient http, JsonSerializerOptions joptions, int acctId) {
@@ -221,8 +231,31 @@ async Task<JsonResponse> Transfer(decimal amount, Account account1, Account acco
     HttpResponseMessage res = await http.SendAsync(req);
     return new JsonResponse() {
         HttpStatusCode = (int)res.StatusCode,
-        DataReturned = account2
+        DataReturned = "Success!"
     };
 }
 
 // SHOW TRANSACTIONS
+async Task<IEnumerable<Transaction>> ShowTransactions(Account account, HttpClient http, JsonSerializerOptions joptions) {
+    HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, $"{baseurl}/api/accounts/transactions/{account.Id}");
+    HttpResponseMessage res = await http.SendAsync(req);
+    if (res.StatusCode != System.Net.HttpStatusCode.OK) {
+        Console.WriteLine($"Http ErrorCode: {res.StatusCode}");
+    }
+    var json = await res.Content.ReadAsStringAsync();
+    var transactions = JsonSerializer.Deserialize(json, typeof(IEnumerable<Transaction>), joptions) as IEnumerable<Transaction>;
+    var acctTransactions = transactions!.Where(x => x.AccountId == account.Id);
+    Console.Clear();
+    Console.WriteLine($"{ShowHeader()}" +
+                      $"\n TRANSACTIONS: \n" +
+                       "--------------");
+    foreach (Transaction trx in acctTransactions) {
+        Console.WriteLine($"Date: {trx.CreatedDate}\n" +
+            $"Description: {trx.Description}\n" +
+            $"Previous Balance: {trx.PreviousBalance}\n" +
+            $"New Balance: {trx.NewBalance}\n\n");
+    }
+    Console.Write("[PRESS ENTER]");
+    Console.ReadLine();
+    return acctTransactions;
+}
