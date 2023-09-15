@@ -58,20 +58,12 @@ while (true) {
     }
     // MAKE DEPOSIT
     else if (action == "d") {
-<<<<<<< HEAD
-        // MakeDeposit method
-        
-        // make amount be the amount the user puts in
-        // make account be the users account
 
-        await Deposit(amount, account, joptions);
-
-=======
         // Deposit method
         Account account = await SelectAccount(http, joptions, customer.Id);
         jsonResponse = await Deposit(500, account, http, joptions);
         Console.WriteLine("Transfer Successful!");
->>>>>>> 49e8405f60b1466e7adf85138a45fcc28e7ae074
+
     }
     // MAKE WITHDRAW
     else if (action == "w") {
@@ -223,3 +215,5 @@ async Task<JsonResponse> Transfer(decimal amount, int id1, int id2, Account acco
 }
 
 // SHOW TRANSACTIONS
+
+
